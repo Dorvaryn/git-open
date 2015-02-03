@@ -16,6 +16,25 @@ then
     exit 1
 fi
 
+# get current folder
+while getopts ":f:" opt; do
+  case $opt in
+    f)
+      folder="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      absFolder=`pwd`
+      parentFolder=`git rev-parse --show-toplevel`
+      folder=${absFolder:${#parentFolder}}
+      ;;
+  esac
+  shift $((OPTIND-1))
+done
+
 
 # assume origin if not provided
 # fallback to upstream if neither is present.
@@ -58,7 +77,7 @@ fi
 
 if [ ! -z "$branch" ]
 then
-    giturl="${giturl}/${providerUrlDifference}/${branch}"
+    giturl="${giturl}/${providerUrlDifference}/${branch}${folder}"
 fi
 
 # simplify URL for master
